@@ -1,7 +1,16 @@
 import { getRepository } from "typeorm";
 import { Request, Response } from "express";
 import { Student } from "../entity/Student";
-
+/**
+ * I've created a very simple set of methods for 
+ * the api.
+ * Honestly, I'm focusing on the challenge of learning Vue.JS, therefore, 
+ * I'm omitting checks of inputs that can be made using Yup or Joi. 
+ * These can be done with a bit more of time.
+ * 
+ * I'm not using specific status code for response, just chosed 401 and 200 
+ * in order to distinguish between a completed or faulty request
+ */
 export default {
 
   async all(request: Request, response: Response) {
