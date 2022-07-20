@@ -5,7 +5,7 @@ import { Student } from "../entity/Student";
  * I've created a very simple set of methods for 
  * the api.
  * Honestly, I'm focusing on the challenge of learning Vue.JS, therefore, 
- * I'm omitting checks of inputs that can be made using Yup or Joi. 
+ * I'm making simple input validation, but one can improve it can be made using Yup or Joi. 
  * These can be done with a bit more of time.
  * 
  * I'm not using specific status code for response, just chosed 401 and 200 
