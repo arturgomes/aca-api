@@ -33,6 +33,21 @@ export default {
 
   async create(request: Request, response: Response) {
     const studentRepository = getRepository(Student);
+    if(!request.body.student?.email) {
+      return response.status(404).json({
+        msg: 'Invalid value', param: 'email', location: 'body'
+      })
+    }
+    if(!request.body.student?.cpf ){
+      return response.status(404).json({
+        msg: 'Invalid value', param: 'cpf', location: 'body'
+      })
+    }
+    if(!request.body.student?.name){
+      return response.status(404).json({
+        msg: 'Invalid value', param: 'name', location: 'body'
+      })
+    }
 
     const {student} = request.body
     const existing = await studentRepository.findOne({email:student.email});
@@ -46,7 +61,16 @@ export default {
     return response.status(201).json({message:"could not create new student"})
   },
   async save(request: Request, response: Response) {
-
+    if(!request.body.email) {
+      return response.status(404).json({
+        msg: 'Invalid value', param: 'email', location: 'body'
+      })
+    }
+    if(!request.body.name){
+      return response.status(404).json({
+        msg: 'Invalid value', param: 'name', location: 'body'
+      })
+    }
     const studentRepository = getRepository(Student);
     let student = await studentRepository.findOne({ ra: request.params.ra })
     const {name,email} = request.body
