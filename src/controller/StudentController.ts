@@ -85,7 +85,7 @@ export default {
 
   async remove(request: Request, response: Response) {
     const studentRepository = getRepository(Student);
-    let studentToRemove = await studentRepository.findOne(request.params.id);
+    let studentToRemove = await studentRepository.findOne(request.params.ra);
     if (!studentToRemove) 
       return response.status(201).json({message:"could not delete student"})
     const res =  await studentRepository.remove(studentToRemove);
