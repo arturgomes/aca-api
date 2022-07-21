@@ -11,6 +11,6 @@ studentRoutes.get("/student", StudentController.all)
 studentRoutes.get("/student/:ra", StudentController.one)
 studentRoutes.post("/student/create", StudentController.create)
 studentRoutes.post("/student/update/:ra", StudentController.save)
-studentRoutes.delete("/student/:id", StudentController.remove)
+studentRoutes.delete("/student/:ra", StudentController.remove)
 
 export default studentRoutes;
