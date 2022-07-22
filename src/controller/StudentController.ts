@@ -1,5 +1,7 @@
 import { getRepository } from "typeorm";
+import * as Yup from 'yup'
 import { Request, Response } from "express";
+import CustomMessages from '../messages/Messages';
 import { Student } from "../entity/Student";
 /**
  * I've created a very simple set of methods for 
@@ -8,7 +10,7 @@ import { Student } from "../entity/Student";
  * I'm making simple input validation, but one can improve it can be made using Yup or Joi. 
  * These can be done with a bit more of time.
  * 
- * I'm not using specific status code for response, just chosed 401 and 200 
+ * I'm not using specific status code for response, just chosed 400 and 200 
  * in order to distinguish between a completed or faulty request
  */
 export default {
@@ -17,7 +19,7 @@ export default {
     const studentRepository = getRepository(Student);
     const res = await studentRepository.find();
     if(!res){
-      return response.status(401).json({message:"could not find any student"})
+      return response.status(400).json({error:CustomMessages.student_not_found})
     }
     return response.status(200).json(res)
   },
@@ -26,50 +28,57 @@ export default {
     const studentRepository = getRepository(Student);
     const res = await studentRepository.findOne(request.params.ra);
     if(!res){
-      return response.status(401).json({message:"could not find any student"})
+      return response.status(400).json({error:CustomMessages.student_not_found})
     }
     return response.status(200).json(res)
   },
 
   async create(request: Request, response: Response) {
     const studentRepository = getRepository(Student);
-    if(!request.body.student?.email) {
-      return response.status(404).json({
-        msg: 'Invalid value', param: 'email', location: 'body'
-      })
-    }
-    if(!request.body.student?.cpf ){
-      return response.status(404).json({
-        msg: 'Invalid value', param: 'cpf', location: 'body'
-      })
-    }
-    if(!request.body.student?.name){
-      return response.status(404).json({
-        msg: 'Invalid value', param: 'name', location: 'body'
-      })
+    const {student} = request.body
+    const schema = Yup.object().shape({
+      email: Yup.string()
+        .email()
+        .required(),
+      cpf: Yup.string().required(),
+      name: Yup.string().required(),
+      ra: Yup.number().required(),
+    });
+    if (
+      !(await schema.isValid({
+        name: student.name,
+        email: student.email,
+        cpf: student.cpf,
+        ra: student.ra,
+      }))
+    ) {
+      return response.status(400).json({ error: CustomMessages.validation_failed });
     }
 
-    const {student} = request.body
+
     const existing = await studentRepository.findOne({email:student.email});
     if(existing){
-      return response.status(401).json({message:"Student already exists"})
+      return response.status(400).json({error: CustomMessages.student_already_exists,
+        message:"Student already exists"})
     }
     const res = await studentRepository.save(student);
     if(res){
-      return response.status(200).json({message:"student created successfully"})
+      return response.status(201).json({message:"student created successfully"})
     }
-    return response.status(201).json({message:"could not create new student"})
+    return response.status(200).json({messager: CustomMessages.student_already_exists})
   },
   async save(request: Request, response: Response) {
-    if(!request.body.email) {
-      return response.status(404).json({
-        msg: 'Invalid value', param: 'email', location: 'body'
-      })
-    }
-    if(!request.body.name){
-      return response.status(404).json({
-        msg: 'Invalid value', param: 'name', location: 'body'
-      })
+    const schema = Yup.object().shape({
+      email: Yup.string().email().required(),
+      name: Yup.string().required(),
+    });
+    if (
+      !(await schema.isValid({
+        name: request.body.name,
+        email: request.body.email,
+      }))
+    ) {
+      return response.status(400).json({ error: CustomMessages.validation_failed });
     }
     const studentRepository = getRepository(Student);
     let student = await studentRepository.findOne({ ra: request.params.ra })
